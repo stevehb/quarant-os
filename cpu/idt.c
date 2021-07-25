@@ -3,6 +3,10 @@
 
 #include "idt.h"
 
+idt_gate_t idt[IDT_ENTRIES];
+idt_register_t idt_reg;
+
+
 // Register gate in Interrupt Descriptor Table
 // It stores in declared in idt.h variable called idt
 void set_idt_gate(int n, uint32_t handler) {

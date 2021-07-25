@@ -31,10 +31,10 @@ typedef struct {
 } __attribute__((packed)) idt_register_t;
 
 // Declare array of IDT entries
-idt_gate_t idt[IDT_ENTRIES];
+extern idt_gate_t idt[IDT_ENTRIES];
 
 // Declare structure with info about IDT location
-idt_register_t idt_reg;
+extern idt_register_t idt_reg;
 
 // Public API
 void set_idt_gate(int n, uint32_t handler);
