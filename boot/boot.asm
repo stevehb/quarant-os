@@ -16,57 +16,151 @@ mov [BOOT_DRIVE], dl
 mov bp, 0x9000
 mov sp, bp
 
-;; call routine that loads kernel into memory
-call load_kernel_into_memory
 
-;; switch to Protected Mode
-call switch_to_pm
+
+
+;;
+;; LOAD KERNEL FROM DISK -> MEMORY
+;;
+mov dh, 15
+mov dl, [BOOT_DRIVE]
+push dx
+
+;; Prepare to read the disk
+;; al = number of sectors to read (1 - 128)
+;; ch = track/cylinder number
+;; dh = head number
+;; cl = sector number
+mov ah, 0x02
+mov al, dh
+mov bx, KERNEL_OFFSET
+mov ch, 0x00
+mov cl, 0x02
+mov dh, 0x00
+int 0x13
+jc disk_read_error
+
+;; Check whether we read the expected number of sectors
+pop dx
+cmp dh, al
+jne disk_read_error
+
+
+
+;;
+;; SWITCH FROM REAL MODE -> PROTECTED MODE
+;;
+cli
+lgdt [gdt_descriptor]
+
+;; CR0 (Control Register 0), set bit to flag Protection Enable
+mov eax, cr0
+or eax, 0x1
+mov cr0, eax
+
+;; Far jump to 32 bit instructions to ensure CPU is done
+jmp CODE_SEG:init_pm
+
+[bits 32]
+init_pm:
+;; Update segment registers
+mov ax, DATA_SEG
+mov ds, ax
+mov ss, ax
+mov es, ax
+mov fs, ax
+mov gs, ax
+
+;; Update base and stack pointers
+mov ebp, 0x90000
+mov esp, ebp
+
+
+
+;;
+;; CALL TO KERNEL
+;;
+sti
+call KERNEL_OFFSET
 jmp $
 
-;; routine reads kernel from disk into memory
-load_kernel_into_memory:
-	;; store all register values
+
+
+[bits 16]
+printer:
 	pusha
-
-	;; set up parameters for disk_read routine
-	mov bx, KERNEL_OFFSET
-	mov dh, 15
-	mov dl, [BOOT_DRIVE]
-	call disk_read
-
-	;; restore register values and ret
+    xor bh, bh
+    mov ah, 0x0E
+	mov al, [esi]
+	inc esi
+    cmp al, 0x00
+    je printer_end
+    int 0x10
+    jmp printer
+printer_end:  
 	popa
 	ret
 
-[bits 32]
-
-begin_pm:
-	;; Check if we can move from Protected Mode to Long Mode
-	;; If something went wrong (detect_lm shouldn't return at all)
-	;; we call execute_kernel in x32 Protected Mode
-	call detect_lm
-	call execute_kernel
+disk_read_error:
+	mov esi, DISK_READ_ERROR_MSG
+	call printer
 	jmp $
 
-[bits 64]
 
-begin_lm:
-	;; In case, if detect_lm and switch_to_lm works fine, call kernel in x64 mode
-	call execute_kernel
-	jmp $
+;;
+;; GDT DATA: https://wiki.osdev.org/Global_Descriptor_Table 
+;;
+gdt_start:
+gdt_null:
+	dd 0x0
+	dd 0x0
 
-execute_kernel:
-	call KERNEL_OFFSET
-	jmp $
+;; Kernel Code Segment
+gdt_kernel_code:
+	dw 0xFFFF
+	dw 0x0000
+	db 0x00
+	db 0x9A
+	db 11001111b
+	db 0x00
 
-%include "boot/disk/disk_read.asm"
-%include "boot/lm/detect_lm.asm"
-%include "boot/lm/switch_to_lm.asm"
-%include "boot/pm/gdt.asm"
-%include "boot/pm/switch_to_pm.asm"
-%include "boot/print/print_nl.asm"
-%include "boot/print/print_string.asm"
+;; Kernel Data Segment
+gdt_kernel_data:
+	dw 0xFFFF
+	dw 0x0000
+	db 0x00
+	db 0x92
+	db 11001111b
+	db 0x00
 
+;; Userland Code Segment
+gdt_userland_code:
+	dw 0xFFFF
+	dw 0x0000
+	db 0x00
+	db 11111010b
+	db 11001111b
+	db 0x00
+
+;; Userland Data Segment
+gdt_userland_data:
+	dw 0xFFFF
+	dw 0x0000
+	db 0x00
+	db 11110010b
+	db 11001111b
+	db 0x00
+
+gdt_end:
+gdt_descriptor:
+	dw gdt_end - gdt_start - 1
+	dd gdt_start
+
+CODE_SEG equ gdt_kernel_code - gdt_start
+DATA_SEG equ gdt_kernel_data - gdt_start
+
+;; Print LF (0x0A) and CR (0x0D)
+DISK_READ_ERROR_MSG: db 0x0D, 0x0A, "Disk read error!", 0x0D, 0x0A, 0
 BOOT_DRIVE: db 0
 
 times 510 - ($-$$) db 0

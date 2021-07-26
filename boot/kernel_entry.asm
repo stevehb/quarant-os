@@ -11,8 +11,8 @@
 global _start
 
 [bits 32]
-[extern kernel_main]
+[extern k_main]
 
 _start:
-  call kernel_main
+  call k_main
   jmp $
