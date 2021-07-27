@@ -1,10 +1,22 @@
-#include "../include/stdint.h"
+#include <stdint.h>
 
 // Address of kernel code segment
 #define KERNEL_CS 0x08
 
 // Entries count in Interrupt Descriptor Table
 #define IDT_ENTRIES 256
+
+#define LOW_8(address) (uint8_t)((address) & 0xFF)
+#define HIGH_8(address) (uint8_t)(((address) >> 8) & 0xFF)
+
+#define LOW_16(address) (uint16_t)((address) & 0xFFFF)
+#define HIGH_16(address) (uint16_t)(((address) >> 16) & 0xFFFF)
+
+#define LOW_32(address) (uint32_t)((address) & 0xFFFFFFFF)
+#define HIGH_32(address) (uint32_t)(((address) >> 32) & 0xFFFFFFFF)
+
+#define LOW_64(address) (uint64_t)((address) & 0xFFFFFFFFFFFFFFFF)
+#define HIGH_64(address) (uint64_t)(((address) >> 64) & 0xFFFFFFFFFFFFFFFF)
 
 // Structure for storing Gate entry
 // http://wiki.osdev.org/Interrupt_Descriptor_Table#Location_and_Size

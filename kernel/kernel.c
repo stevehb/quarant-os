@@ -1,7 +1,8 @@
+#include "function.h"
 #include "kernel.h"
-#include "../cpu/isr.h"
-#include "../drivers/screen.h"
-#include "../libc/string.h"
+#include "isr.h"
+#include "screen.h"
+#include "string.h"
 
 void k_main() {
   clear_screen();

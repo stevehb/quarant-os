@@ -5,11 +5,11 @@
 
 #include "keyboard.h"
 #include "screen.h"
-#include "../cpu/ports.h"
-#include "../cpu/isr.h"
-#include "../libc/function.h"
-#include "../libc/string.h"
-#include "../kernel/kernel.h"
+#include "ports.h"
+#include "isr.h"
+#include "function.h"
+#include "string.h"
+#include "kernel.h"
 
 #define BACKSPACE 0x0E
 #define ENTER 0x1C

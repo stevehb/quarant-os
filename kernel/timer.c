@@ -4,7 +4,7 @@
 #include "timer.h"
 #include "isr.h"
 #include "ports.h"
-#include "../libc/function.h"
+#include "function.h"
 
 uint32_t tick = 0;
 

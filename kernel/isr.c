@@ -5,10 +5,10 @@
 #include "idt.h"
 #include "ports.h"
 #include "timer.h"
-#include "../drivers/keyboard.h"
-#include "../drivers/screen.h"
-#include "../libc/mem.h"
-#include "../libc/string.h"
+#include "keyboard.h"
+#include "screen.h"
+#include "mem.h"
+#include "string.h"
 
 isr_t interrupt_handlers[256];
 

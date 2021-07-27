@@ -3,8 +3,8 @@
 // http://wiki.osdev.org/VGA_Hardware
 
 #include "screen.h"
-#include "../cpu/ports.h"
-#include "../libc/mem.h"
+#include "ports.h"
+#include "mem.h"
 
 int print_char(char character, int col, int row, int attribute);
 int get_cursor_offset();
