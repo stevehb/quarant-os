@@ -6,16 +6,20 @@
 [org 0x7C00]
 [bits 16]
 
-;; memory offset where our kernel is located
+;; Memory offset where our kernel is located
 KERNEL_OFFSET equ 0x1000
 
-;; save the boot drive number
+;; Save the boot drive number
 mov [BOOT_DRIVE], dl
 
-;; update base and stack pointers
+;; Update base and stack pointers
 mov bp, 0x9000
 mov sp, bp
 
+;; Set video mode to 320x200x256
+mov ah, 0x00
+mov al, 0x13
+int 0x10
 
 
 

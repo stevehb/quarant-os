@@ -1,11 +1,13 @@
 #include <stdint.h>
 
 // Address in memory which is mapped to video
-#define VIDEO_ADDRESS 0xB8000
+// #define VIDEO_ADDRESS 0xB8000
+#define VIDEO_ADDRESS 0xA0000
+
 
 // Terminal sizes by default
 #define MAX_ROWS 25
-#define MAX_COLS 80
+#define MAX_COLS 40
 
 // Attribute byte for text
 // Foreground color is in its lowest 4 bits

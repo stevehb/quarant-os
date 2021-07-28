@@ -14,6 +14,9 @@ K_OBJS := $(OBJDIR)/kernel_entry.o \
 	$(K_SRC_ASM:$(SRCDIR)/%.asm=$(OBJDIR)/%.o) \
 	$(K_SRC_C:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 
+# $@ = Filename of the target
+# $< = Filename of prerequisites (one at a time?)
+# $^ = Filenames of all prerequisites
 
 debug:
 	$(info K_SRC_ASM = $(K_SRC_ASM))
@@ -23,7 +26,7 @@ debug:
 all: dirs os-image.bin
 
 run: all
-	qemu-system-i386.exe -drive format=raw,file="\\$(shell wslpath -w os-image.bin)"
+	qemu-system-i386.exe -serial stdio -drive format=raw,file="\\$(shell wslpath -w os-image.bin)"
 
 clean:
 	rm -f ./**/*.o

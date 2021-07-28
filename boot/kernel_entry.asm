@@ -14,5 +14,5 @@ global _start
 [extern k_main]
 
 _start:
-  call k_main
-  jmp $
+    call k_main
+    jmp $
