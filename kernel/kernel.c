@@ -42,6 +42,30 @@ void set_pal(uint8_t clr, uint8_t r, uint8_t g, uint8_t b) {
     outb(0x03C9, b);  // B
 }
 
+
+static uint8_t PALETTE[256][3] = { 0 };
+
+void rotate_palette() {
+    static uint8_t step = 0;
+    step++;
+    if(step >= 256) { step = 0; }  // Should automatically wrap...
+
+    for(int i = 0; i < 256; i++) {
+        int pal_idx = (i + step) % 255;
+        set_pal(i, PALETTE[pal_idx][0], PALETTE[pal_idx][1], PALETTE[pal_idx][2]);
+    }
+}
+
+void timer_callback(registers_t regs) {
+    static uint32_t ticks = 0;
+    ticks++;
+    if(ticks % 100 == 0) {
+        dbg_print("Timer ticks "); dbg_printi(ticks); dbg_print("\n");
+    }
+    rotate_palette();
+}
+
+
 void k_main() {
     // clear_screen();
     isr_install();
@@ -50,15 +74,16 @@ void k_main() {
 
 
     // Set greyscale palette
-    for(uint32_t i = 0; i < 256; i++) {
+    for(int i = 0; i < 256; i++) {
         uint8_t val = (i - (i % 4)) / 4;
+        PALETTE[i][0] = val; PALETTE[i][1] = val; PALETTE[i][2] = val;
         set_pal(i, val, val, val);
     }
 
 
-    for(uint32_t y = 0; y < HEIGHT; y++) {
-        for(uint32_t x = 0; x < 256; x++) {
-            uint32_t offset = (y * WIDTH) + x;
+    for(int y = 0; y < HEIGHT; y++) {
+        for(int x = 0; x < 256; x++) {
+            int offset = (y * WIDTH) + x;
             vidptr[offset] = (uint8_t) x;
         }
     }

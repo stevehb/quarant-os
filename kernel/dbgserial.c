@@ -59,9 +59,10 @@ void dbg_printi(int i) {
     int idx = 0;
     do {
         int rem = i % 10;
-        buff[idx] = '0' + (uint8_t) rem;
+        buff[idx++] = '0' + (uint8_t) rem;
         i = i / 10;
-    } while(i > 0);
+    } while(i > 0 && idx < 79);
+    if(is_neg) { buff[idx] = '-'; }
 
     strrev(buff);
     dbg_print(buff);

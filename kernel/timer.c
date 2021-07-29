@@ -6,14 +6,16 @@
 #include "ports.h"
 #include "function.h"
 
-uint32_t tick = 0;
+#include "callbacks.h"
+
+// uint32_t tick = 0;
 
 // Callback for timer
 // Triggers each time when hardware interrupt occurred
-static void timer_callback(registers_t regs) {
-  tick++;
-  UNUSED(regs);
-}
+// static void timer_callback(registers_t regs) {
+//   tick++;
+//   UNUSED(regs);
+// }
 
 // Initialize PIC
 // http://wiki.osdev.org/Programmable_Interval_Timer#PIT_Channel_0_Example_Code
