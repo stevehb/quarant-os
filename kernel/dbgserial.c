@@ -1,7 +1,8 @@
 #include <stdbool.h>
 #include <stdint.h>
-#include "ports.h"
 #include "dbgserial.h"
+#include "ports.h"
+#include "string.h"
 
 
 static const uint16_t COM1 = 0x03f8;
@@ -47,4 +48,21 @@ void dbg_print(const char* str) {
         dbg_print_c(str[i]);
         i++;
     }
+}
+
+void dbg_printi(int i) {
+    char buff[80] = { 0 };
+
+    bool is_neg = i < 0;
+    if(is_neg) { i = -i; }
+
+    int idx = 0;
+    do {
+        int rem = i % 10;
+        buff[idx] = '0' + (uint8_t) rem;
+        i = i / 10;
+    } while(i > 0);
+
+    strrev(buff);
+    dbg_print(buff);
 }

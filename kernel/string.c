@@ -1,4 +1,29 @@
+#include <stddef.h>
+#include <stdint.h>
 #include "string.h"
+
+
+
+void strrev(char* s) {
+  size_t len = strlen(s);
+
+  int tmp, i, j;
+  for(i = 0, j = len - 1; i < j; i++, j--) {
+    tmp = s[i];
+    s[i] = s[j];
+    s[j] = tmp;
+  }
+}
+
+size_t strlen(const char* s) {
+  size_t i = 0;
+  while(s[i] != '\0') { ++i; }
+  return i;
+}
+
+
+
+
 
 void itoa(int n, char str[]) {
   int i, sign;
@@ -12,22 +37,7 @@ void itoa(int n, char str[]) {
   if (sign < 0) str[i++] = '-';
   str[i] = '\0';
 
-  reverse(str);
-}
-
-void reverse(char s[]) {
-  int c, i, j;
-  for (i = 0, j = strlen(s)-1; i < j; i++, j--) {
-    c = s[i];
-    s[i] = s[j];
-    s[j] = c;
-  }
-}
-
-int strlen(char s[]) {
-  int i = 0;
-  while (s[i] != '\0') ++i;
-  return i;
+  strrev(str);
 }
 
 void append(char s[], char n) {
